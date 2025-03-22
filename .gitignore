@@ -26,4 +26,5 @@ firebase.js
 
 # 
 /src/api/firebase.js
+/backend/brumhack.json
 /backend/.env
