@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { getFirestore, collection, addDoc, getDocs, serverTimestamp } from 'firebase/firestore';
-import { app, db } from '../src/api/firebase';
+import { collection, addDoc, getDocs, serverTimestamp } from 'firebase/firestore';
+import { db } from '../src/api/firebase';
 
 interface Contact {
     name: string;
