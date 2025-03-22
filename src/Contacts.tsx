@@ -4,15 +4,16 @@ import { db } from '../src/api/firebase';
 import './Contacts.css';
 
 interface Contact {
-  name: string;
-  telephone: string;
-  id?: string;
+    name: string;
+    telephone: string;
+    notes : string;
 }
 
 const Contacts: React.FC = () => {
   const [contact, setContact] = useState<Contact>({
     name: '',
     telephone: '',
+    notes: '',
   });
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [message, setMessage] = useState<string>('');
@@ -43,21 +44,25 @@ const Contacts: React.FC = () => {
     setContact((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle form submission and add/update contact
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      // Check if a contact with the same name or telephone already exists.
-      const existingContact = contacts.find(
-        (c) => c.name === contact.name || c.telephone === contact.telephone
-      );
+  const handleNotes = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        
+  }
 
-      if (existingContact && existingContact.name) {
-        // Prompt the user whether they want to update the existing contact.
-        const shouldUpdate = window.confirm(
-          "A contact with this name or telephone already exists. Do you want to update it?"
+    // Handle form submission and add new contact
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      try {
+        // Check if a contact with the same name or telephone already exists.
+        const existingContact = contacts.find(
+          (c) => c.name === contact.name || c.telephone === contact.telephone
         );
-        if (shouldUpdate) {
+        console.log(existingContact);
+        if (existingContact) {
+          // Prompt the user whether to update the existing contact.
+          const shouldUpdate = window.confirm(
+            "A contact with this name or telephone already exists. Do you want to update it?"
+          );
+          if (shouldUpdate) {
           // Find the document ID for the existing contact.
           let docId = "";
           const allContacts = collection(db, "Contacts");
@@ -89,27 +94,30 @@ const Contacts: React.FC = () => {
             setMessage("Contact updated with new name and telephone.");
           }
           fetchContacts();
-          return;
+          
         } else {
-          setMessage("Contact not updated.");
-          return;
+            setMessage("Contact not updated.");
+            return;
+          }
         }
-      }
+        else{
 
-      // If no matching contact exists, add a new contact.
-      const newContact = { ...contact, createdAt: serverTimestamp() };
-      const docRef = await addDoc(collection(db, "Contacts"), newContact);
-      setMessage(`Contact added with ID: ${docRef.id}`);
-      // Reset the form.
-      setContact({
-        name: "",
-        telephone: "",
-      });
-      // Refresh the contacts list.
-      fetchContacts();
-    } catch (error) {
-      console.error("Error adding/updating contact:", error);
-      setMessage("Error adding/updating contact.");
+          // If no matching contact exists, add a new contact.
+          const newContact = { ...contact, createdAt: serverTimestamp() };
+          const docRef = await addDoc(collection(db, "Contacts"), newContact);
+          setMessage(`Contact added with ID: ${docRef.id}`);
+          // Reset the form.
+          setContact({
+            name: "",
+            telephone: "",
+            notes: "",
+          });
+          // Refresh the contacts list.
+          fetchContacts();
+        }
+      } catch (error) {
+        console.error("Error adding/updating contact:", error);
+        setMessage("Error adding/updating contact.");
     }
   };
 
