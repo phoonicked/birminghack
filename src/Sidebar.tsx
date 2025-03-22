@@ -1,6 +1,8 @@
+// Sidebar.tsx
 import React from "react";
 import { MdDashboard, MdContacts, MdSettings } from "react-icons/md";
-
+import { Link } from "react-router-dom";
+ 
 const Sidebar: React.FC = () => {
   return (
     <aside className="sidebar">
@@ -9,11 +11,11 @@ const Sidebar: React.FC = () => {
         <ul className="nav-list">
           <li>
             <MdDashboard size={20} />
-            <span>Dashboard</span>
+            <Link to="/">Dashboard</Link>
           </li>
           <li>
             <MdContacts size={20} />
-            <span>Contacts</span>
+            <Link to="/contacts">Contacts</Link>
           </li>
           <li>
             <MdSettings size={20} />
