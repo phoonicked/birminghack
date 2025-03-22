@@ -18,34 +18,34 @@ const Contacts: React.FC = () => {
         id: '',
     });
 
-  const [contacts, setContacts] = useState<Contact[]>([]);
-  const [message, setMessage] = useState<string>('');
-  const [showForm, setShowForm] = useState<boolean>(false);
+    const [contacts, setContacts] = useState<Contact[]>([]);
+    const [message, setMessage] = useState<string>('');
+    const [showForm, setShowForm] = useState<boolean>(false);
 
-  useEffect(() => {
-    fetchContacts();
-  }, []);
+    useEffect(() => {
+        fetchContacts();
+    }, []);
 
-  const fetchContacts = async () => {
-    // Reference to the "contacts" collection
-    const contactsRef = collection(db, "Contacts");
-    const snapshot = await getDocs(contactsRef);
+    const fetchContacts = async () => {
+        // Reference to the "contacts" collection
+        const contactsRef = collection(db, "Contacts");
+        const snapshot = await getDocs(contactsRef);
 
-    // Map through the documents to extract each contact's id and data
-    const contactsList: Contact[] = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...(doc.data() as Omit<Contact, "id">),
-    }));
+        // Map through the documents to extract each contact's id and data
+        const contactsList: Contact[] = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...(doc.data() as Omit<Contact, "id">),
+        }));
 
-    // Update state with the fetched contacts
-    setContacts(contactsList);
-  };
+        // Update state with the fetched contacts
+        setContacts(contactsList);
+    };
 
-  // Update form state on input change
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setContact((prev) => ({ ...prev, [name]: value }));
-  };
+    // Update form state on input change
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setContact((prev) => ({ ...prev, [name]: value }));
+    };
 
     // Handle form submission and add new contact
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
