@@ -1,7 +1,7 @@
-// Sidebar.tsx
 import React from "react";
 import { MdDashboard, MdContacts, MdSettings } from "react-icons/md";
 import { Link } from "react-router-dom";
+import "./Sidebar.css";
  
 const Sidebar: React.FC = () => {
   return (
