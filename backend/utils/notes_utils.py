@@ -2,7 +2,7 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 
 # Initialize the Firebase Admin SDK with your service account key.
-cred = credentials.Certificate('../brumhack.json')
+cred = credentials.Certificate("./brumhack.json")
 firebase_admin.initialize_app(cred)
 
 # Create a Firestore client.
