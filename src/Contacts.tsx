@@ -62,7 +62,7 @@ const Contacts: React.FC = () => {
           const shouldUpdate = window.confirm(
             "A contact with this name or telephone already exists. Do you want to update it?"
           );
-        if (shouldUpdate) {
+          if (shouldUpdate) {
           // Find the document ID for the existing contact.
           let docId = "";
           const allContacts = collection(db, "Contacts");
@@ -95,42 +95,27 @@ const Contacts: React.FC = () => {
           }
           fetchContacts();
           
-          } else {
+        } else {
             setMessage("Contact not updated.");
             return;
           }
-    
+        }
+        else{
+
           // If no matching contact exists, add a new contact.
-          const newContact = { ...contact };
+          const newContact = { ...contact, createdAt: serverTimestamp() };
           const docRef = await addDoc(collection(db, "Contacts"), newContact);
           setMessage(`Contact added with ID: ${docRef.id}`);
           // Reset the form.
           setContact({
-           name: "",
+            name: "",
             telephone: "",
-           notes: "",
+            notes: "",
           });
           // Refresh the contacts list.
           fetchContacts();
-        } catch (error) {
-          console.error("Error adding/updating contact:", error);
-          setMessage("Error adding/updating contact.");
         }
-
-      // If no matching contact exists, add a new contact.
-      const newContact = { ...contact, createdAt: serverTimestamp() };
-      const docRef = await addDoc(collection(db, "Contacts"), newContact);
-      setMessage(`Contact added with ID: ${docRef.id}`);
-      // Reset the form.
-      setContact({
-        name: "",
-        telephone: "",
-        notes: "",
-      });
-      // Refresh the contacts list.
-      fetchContacts();
-    } 
-      catch (error) {
+      } catch (error) {
         console.error("Error adding/updating contact:", error);
         setMessage("Error adding/updating contact.");
     }
