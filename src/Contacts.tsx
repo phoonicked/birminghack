@@ -56,10 +56,10 @@ const Contacts: React.FC = () => {
             setMessage(`Contact added with ID: ${docRef.id}`);
             // Reset form
             setContact({
-                firstName: '',
-                lastName: '',
-                email: '',
-                phone: '',
+                name: '',
+                telephone: '',
+                time: '',
+                id: '',
             });
             // Refresh the contacts list
             fetchContacts();
@@ -101,7 +101,7 @@ const Contacts: React.FC = () => {
                                 required
                             />
                         </div>
-                        <button type="submit">Add Contact</button>
+                        <button type="submit" onClick={handleSubmit()}>Add Contact</button>
                     </form>
                     {message && <p>{message}</p>}
                 </div>
