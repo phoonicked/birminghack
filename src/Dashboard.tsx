@@ -1,4 +1,5 @@
 import React from "react";
+import "./Dashboard.css"; // Import the Dashboard CSS
 
 interface CardProps {
   title: string;
@@ -23,10 +24,8 @@ const Dashboard: React.FC = () => {
       <div className="cards-grid">
         {/* 1) Left-Top: Alerts */}
         <Card title="Alerts" value="You have 5 new alerts" />
-
         {/* 2) Right (spans two rows): Activity */}
         <Card title="Activity" value="Active for 3 hours today" />
-
         {/* 3) Left-Bottom: Total Sales */}
         <Card title="Total Sales" value="$1,234" />
       </div>
