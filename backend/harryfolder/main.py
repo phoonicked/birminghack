@@ -133,7 +133,6 @@ while cap.isOpened():
                         sim = cosine_similarity(face_embedding, tracked_faces[t_face_id]["embedding"])
                         # If similarity is high and the face was only tracked for a short period.
                         if sim > SIMILARITY_THRESHOLD and (frame_id - tracked_faces[t_face_id]["first_seen"]) < DISAPPEAR_THRESHOLD:
-                            print(f"❌ Removing short-lived duplicate face {t_face_id} since db_match {db_match} is found.")
                             try:
                                 os.remove(tracked_faces[t_face_id]["filename"])
                             except Exception as e:
@@ -162,7 +161,6 @@ while cap.isOpened():
                         "position": face_position,
                         "filename": filename,
                     }
-                    print(f"🆕 New face detected and stored as {new_id}")
                     display_name = new_id
 
             # Draw rectangle and label around the detected face.
@@ -175,7 +173,6 @@ while cap.isOpened():
                          if frame_id - data["last_seen"] > DISAPPEAR_THRESHOLD]
     for face_id in disappeared_faces:
         if frame_id - tracked_faces[face_id]["first_seen"] < DISAPPEAR_THRESHOLD:
-            print(f"❌ Removing short-lived face {face_id}")
             try:
                 os.remove(tracked_faces[face_id]["filename"])
             except Exception as e:
