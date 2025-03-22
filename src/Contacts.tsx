@@ -5,6 +5,7 @@ import { app, db } from '../src/api/firebase';
 interface Contact {
     name: string;
     telephone: string;
+    notes : string;
 }
 
 const Contacts: React.FC = () => {
@@ -12,11 +13,13 @@ const Contacts: React.FC = () => {
     const [contact, setContact] = useState<Contact>({
         name: '',
         telephone: '',
+        notes: '',
     });
 
     const [contacts, setContacts] = useState<Contact[]>([]);
     const [message, setMessage] = useState<string>('');
     const [showForm, setShowForm] = useState<boolean>(false);
+    const [notes, setNotes] = useState<string>('');
 
     useEffect(() => {
         fetchContacts();
@@ -36,6 +39,10 @@ const Contacts: React.FC = () => {
         // Update state with the fetched contacts
         setContacts(contactsList);
     };
+
+    const handleNotes = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        
+    }
 
     // Update form state on input change
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,6 +124,7 @@ const Contacts: React.FC = () => {
         setContact({
           name: "",
           telephone: "",
+          notes: "",
         });
         // Refresh the contacts list.
         fetchContacts();
