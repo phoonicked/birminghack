@@ -44,30 +44,10 @@ useEffect(() => {
 
   return (
     <main className="main-content">
-      <div className="main-content-header">
-        <h1>User Management</h1>
-        <button className="add-user-btn">Add User</button>
-      </div>
-      <div className="table-container">
-        <table className="user-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Joined</th>
-            </tr>
-          </thead>
-          <tbody>
-            {contacts.map((contact, idx) => (
-              <tr key={idx}>
-                <td>{contact.name}</td>
-                <td>{contact.telephone}</td>
-                <td>{contact.time}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/contacts" element={<ContactForm />} />
+      </Routes>
     </main>
   );
 };

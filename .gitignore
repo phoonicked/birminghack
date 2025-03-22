@@ -23,3 +23,6 @@ firebase.js
 *.njsproj
 *.sln
 *.sw?
+
+# 
+/src/api/firebase.js
