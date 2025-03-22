@@ -47,7 +47,7 @@ const NotesCard: React.FC = () => {
   // Fetch notes from Firestore
   const fetchNotes = async () => {
     try {
-      const notesCollection = collection(db, "notes");
+      const notesCollection = collection(db, "generalNotes");
       const snapshot = await getDocs(notesCollection);
       const notesList: Note[] = snapshot.docs.map((docSnap) => ({
         id: docSnap.id,
