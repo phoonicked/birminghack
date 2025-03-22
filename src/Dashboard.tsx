@@ -47,7 +47,7 @@ const NotesCard: React.FC = () => {
   // Fetch notes from Firestore
   const fetchNotes = async () => {
     try {
-      const notesCollection = collection(db, "generalNotes");
+      const notesCollection = collection(db, "notes");
       const snapshot = await getDocs(notesCollection);
       const notesList: Note[] = snapshot.docs.map((docSnap) => ({
         id: docSnap.id,
@@ -158,12 +158,12 @@ const NotesCard: React.FC = () => {
               <>
                 <p className="note-text">{n.text}</p>
                 <div className="note-actions">
-                <button onClick={() => handleEditNote(n.id, n.text)} className="note-edit-btn">
-  <FaEdit />
-</button>
-<button onClick={() => handleDeleteNote(n.id)} className="note-delete-btn">
-  <FaTrash />
-</button>
+                  <button onClick={() => handleEditNote(n.id, n.text)} className="note-edit-btn">
+                    <FaEdit />
+                  </button>
+                  <button onClick={() => handleDeleteNote(n.id)} className="note-delete-btn">
+                    <FaTrash />
+                  </button>
                 </div>
               </>
             )}
