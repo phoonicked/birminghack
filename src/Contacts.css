@@ -1,110 +1,309 @@
-.add-contact-form {
-    background: #fff;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
-    animation: slideIn 0.4s ease-out;
-  }
-  
-  .add-contact-form h2 {
+/* Contacts.css */
+
+/* Overall container mimicking the screenshot's spacing and background */
+.contacts-container {
+    background-color: #f1f5f9;
+    min-height: 100vh;
+    padding: 2rem;
+    position: relative;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Top tab/pill navigation */
+.tab-nav {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.tab-pill {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 9999px;
+    /* pill shape */
+    background-color: #e5e7eb;
+    color: #374151;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.tab-pill.active {
+    background-color: #2563eb;
+    color: #fff;
+}
+
+.tab-pill:hover {
+    background-color: #cbd5e1;
+}
+
+/* Quick Access header */
+.quick-access-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 1rem;
-    color: #333;
+}
+
+.section-title {
     font-size: 1.5rem;
-  }
-  
-  /* Form group styling for spacing and label clarity */
-  .form-group {
-    margin-bottom: 1rem;
-  }
-  
-  .form-group label {
-    display: block;
     font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: #555;
-  }
-  
-  /* Input field styling with focus state */
-  .input-field {
+    color: #333;
+}
+
+/* Cards row that displays contact "tiles" horizontally */
+.cards-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+/* Individual contact card styling */
+.contact-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    width: 280px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.contact-info h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.2rem;
+    color: #111827;
+}
+
+.contact-info p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.95rem;
+}
+
+.contact-extra {
+    margin-top: 0.75rem;
+}
+
+.notes-label {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin-bottom: 0.25rem;
+    display: inline-block;
+}
+
+.notes-text {
+    font-size: 0.95rem;
+    color: #4b5563;
+    margin: 0;
+}
+
+/* Floating add user button with plus icon */
+.floating-add-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+    color: #fff;
+    border: none;
+    border-radius: 9999px;
+    /* pill shape or circle */
+    width: 56px;
+    height: 56px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    z-index: 1000;
+}
+
+.floating-add-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.2);
+}
+
+/* Modal overlay that blurs the background */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(5px);
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+/* Modal content container */
+.modal-content {
+    background: #fff;
+    border-radius: 8px;
+    padding: 2rem;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    animation: scaleIn 0.3s ease-out;
+    position: relative;
+}
+
+/* Scale-in animation for the modal */
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Form group styling */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: #444;
+    font-weight: 600;
+}
+
+/* Input field styling */
+.input-field {
     width: 100%;
     padding: 0.75rem;
     border: 1px solid #ccc;
-    border-radius: 8px;
+    border-radius: 6px;
     font-size: 1rem;
     transition: border-color 0.3s ease;
-  }
-  
-  .input-field:focus {
+}
+
+.input-field:focus {
     outline: none;
-    border-color: #007bff;
-  }
-  
-  /* Submit button styling with smooth hover effect */
-  .submit-btn {
-    padding: 0.75rem 1.5rem;
-    background-color: #28a745;
-    border: none;
-    border-radius: 8px;
+    border-color: #2563eb;
+}
+
+/* Submit button styling */
+.submit-btn {
+    background-color: #2563eb;
     color: #fff;
+    border: none;
+    padding: 0.75rem 1.5rem;
     font-size: 1rem;
+    border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-  }
-  
-  .submit-btn:hover {
-    background-color: #1e7e34;
-  }
-  
-  /* Message display for feedback */
-  .message {
+}
+
+.submit-btn:hover {
+    background-color: #1e40af;
+}
+
+/* Feedback message styling */
+.message {
     margin-top: 1rem;
     font-weight: 600;
-    color: #27ae60;
-  }
-  
-  /* Table container styling */
-  .table-container {
+    color: #10b981;
+    text-align: center;
+}
+
+/* Cards row that displays contact "tiles" horizontally */
+.cards-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+/* Shared contact card style */
+.contact-card {
     background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  }
-  
-  /* User table styling */
-  .user-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .user-table thead {
-    background-color: #007bff;
-  }
-  
-  .user-table th {
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    width: 280px;
     padding: 1rem;
-    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* The "Add Contact" tile at the end of the list */
+.add-contact-tile {
+    border: 2px dashed #cbd5e1;
+    /* Light dashed border */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+    /* Gray-600 */
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.add-contact-tile:hover {
+    background-color: #f9fafb;
+}
+
+/* Larger icon inside the tile */
+.add-contact-icon {
+    margin-bottom: 0.5rem;
+    color: #6b7280;
+}
+
+/* Action buttons container */
+.card-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  
+  /* Base styles for the icon buttons */
+  .card-btn {
+    padding: 0.5rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem; /* For icon size */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  /* Edit button styling (blue) */
+  .edit-btn {
+    background-color: #2563eb; 
     color: #fff;
-    font-size: 1rem;
-    font-weight: 500;
+  }
+  .edit-btn:hover {
+    background-color: #1e40af;
   }
   
-  .user-table td {
-    padding: 1rem;
-    font-size: 0.95rem;
-    color: #333;
-    border-bottom: 1px solid #e5e7eb;
+  /* Delete button styling (red) */
+  .delete-btn {
+    background-color: #ef4444;
+    color: #fff;
   }
-  
-  /* Animation for form appearance */
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateX(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-  
+  .delete-btn:hover {
+    background-color: #dc2626;
+  }  
