@@ -1,145 +1,109 @@
-.main-content-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-}
-
-.main-content-header h1 {
-    font-size: 2rem;
-    color: #333;
-    margin: 0;
-}
-
-.add-user-btn {
-    padding: 0.5rem 1.2rem;
-    background-color: #007bff;
-    border: none;
-    border-radius: 4px;
-    color: #fff;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.add-user-btn:hover {
-    background-color: #0056b3;
-}
-
 .add-contact-form {
     background: #fff;
     padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     margin-bottom: 2rem;
     animation: slideIn 0.4s ease-out;
-}
-
-.add-contact-form h2 {
-    margin-top: 0;
-    color: #333;
-}
-
-.add-contact-form form>div {
+  }
+  
+  .add-contact-form h2 {
     margin-bottom: 1rem;
-}
-
-.add-contact-form label {
+    color: #333;
+    font-size: 1.5rem;
+  }
+  
+  /* Form group styling for spacing and label clarity */
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .form-group label {
     display: block;
     font-weight: 600;
-    color: #555;
     margin-bottom: 0.5rem;
-}
-
-.add-contact-form input {
+    color: #555;
+  }
+  
+  /* Input field styling with focus state */
+  .input-field {
     width: 100%;
-    padding: 0.5rem;
+    padding: 0.75rem;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 8px;
     font-size: 1rem;
     transition: border-color 0.3s ease;
-}
-
-.add-contact-form input:focus {
+  }
+  
+  .input-field:focus {
     outline: none;
     border-color: #007bff;
-}
-
-.add-contact-form button {
-    padding: 0.5rem 1rem;
+  }
+  
+  /* Submit button styling with smooth hover effect */
+  .submit-btn {
+    padding: 0.75rem 1.5rem;
     background-color: #28a745;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     color: #fff;
     font-size: 1rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
-}
-
-.add-contact-form button:hover {
+  }
+  
+  .submit-btn:hover {
     background-color: #1e7e34;
-}
-
-.table-container {
-    overflow-x: auto;
-}
-
-.user-table {
+  }
+  
+  /* Message display for feedback */
+  .message {
+    margin-top: 1rem;
+    font-weight: 600;
+    color: #27ae60;
+  }
+  
+  /* Table container styling */
+  .table-container {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* User table styling */
+  .user-table {
     width: 100%;
     border-collapse: collapse;
-}
-
-.user-table thead {
+  }
+  
+  .user-table thead {
     background-color: #007bff;
-}
-
-.user-table thead th {
-    padding: 0.75rem;
+  }
+  
+  .user-table th {
+    padding: 1rem;
     text-align: left;
     color: #fff;
     font-size: 1rem;
-}
-
-.user-table tbody tr {
-    background: #fff;
-    transition: background 0.3s;
-}
-
-.user-table tbody tr:nth-child(even) {
-    background: #f1f1f1;
-}
-
-.user-table tbody tr:hover {
-    background: #e9ecef;
-}
-
-.user-table tbody td {
-    padding: 0.75rem;
+    font-weight: 500;
+  }
+  
+  .user-table td {
+    padding: 1rem;
     font-size: 0.95rem;
     color: #333;
-}
-
-/* Animations */
-@keyframes fadeIn {
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  /* Animation for form appearance */
+  @keyframes slideIn {
     from {
-        opacity: 0;
-        transform: translateY(10px);
+      opacity: 0;
+      transform: translateX(-10px);
     }
-
     to {
-        opacity: 1;
-        transform: translateY(0);
+      opacity: 1;
+      transform: translateX(0);
     }
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateX(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
+  }  
