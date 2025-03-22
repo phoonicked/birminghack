@@ -25,3 +25,4 @@ dist-ssr
 
 # 
 /src/api/firebase.js
+/backend/.env
