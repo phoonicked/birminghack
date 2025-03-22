@@ -1,0 +1,189 @@
+/* Dashboard.css */
+
+/* Dashboard container styling */
+.dashboard {
+    padding: 2rem;
+    background: #f4f7fc;
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Greeting styling */
+.dashboard-greeting {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    color: #333;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+/* Cards grid layout */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-gap: 1.5rem;
+}
+
+/* Base card styling */
+.card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Card title and value styling */
+.card-title {
+    font-size: 1.8rem;
+    margin-bottom: 0.75rem;
+    color: #2c3e50;
+}
+
+.card-value {
+    font-size: 1.2rem;
+    color: #7f8c8d;
+}
+
+/* Special styling for the Notes card */
+.notes-card {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Notes form styling within the card */
+.notes-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.notes-textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #bdc3c7;
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+    resize: vertical;
+}
+
+.notes-textarea:focus {
+    outline: none;
+    border-color: #2980b9;
+}
+
+.notes-submit-btn, .notes-submit-btn:focus {
+    padding: 0.5rem 1rem;
+    background-color: #27ae60;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    align-self: flex-end;
+    transition: background-color 0.3s ease;
+    outline: none;
+    box-shadow: none;
+}
+
+.notes-submit-btn:hover {
+    background-color: #1e8449;
+}
+
+.note-message {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #27ae60;
+}
+
+/* Styling for the list of notes */
+.notes-list {
+    margin-top: 1.5rem;
+}
+
+.note-item {
+    background: #ecf0f1;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.note-text {
+    font-size: 1rem;
+    color: #34495e;
+    flex: 1;
+}
+
+/* Note action buttons container */
+.note-actions {
+    display: flex;
+    gap: 0.5rem;
+    outline: none;
+    box-shadow: none;
+}
+
+.note-edit-btn,
+.note-delete-btn,
+.note-update-btn,
+.note-cancel-btn, .note-edit-btn:focus, .note-delete-btn:focus, .note-update-btn:focus, .note-cancel-btn:focus {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 40px;
+    /* Use a small radius instead of a circle */
+    transition: transform 0.2s ease, background 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #2980b9;
+    font-size: 1.05rem;
+    /* Adjust size as needed for icons */
+    outline: none;
+    box-shadow: none;
+}
+
+.note-delete-btn:hover,
+.note-cancel-btn:hover,
+.note-edit-btn:hover,
+.note-update-btn:hover {
+    transform: scale(1.1);
+    outline: none;
+    box-shadow: none;
+}
+
+/* Styling for the editable note textarea */
+.note-edit-textarea {
+    width: 100%;
+    min-height: 60px;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #bdc3c7;
+    border-radius: 8px;
+    resize: vertical;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
