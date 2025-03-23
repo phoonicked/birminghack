@@ -32,12 +32,126 @@ interface CardProps {
   children?: React.ReactNode;
 }
 
+interface TempData {
+  name?: string;
+  image?: string;
+  isContact?: boolean;
+}
+
 const Card: React.FC<CardProps> = ({ title, value, children }) => {
   return (
     <div className="card">
       <h2 className="card-title">{title}</h2>
       {value ? <p className="card-value">{value}</p> : children}
     </div>
+  );
+};
+
+const AlertBox: React.FC = () => {
+  // Local state to store fetched data and loading status
+  const [tempData, setTempData] = useState<TempData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch data from "temp" collection on component mount
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const querySnapshot = await getDocs(collection(db, "temp"));
+        const newData: TempData[] = [];
+
+        querySnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          newData.push({
+            id: docSnap.id,
+            name: data.name,
+            isContact: data.isContact,
+            image: data.image,
+          });
+        });
+
+        setTempData(newData);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data from 'temp': ", error);
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
+  // Handler for when the user chooses "Yes"
+  const handleAddToContacts = async (item: TempData) => {
+    if (!item.name) return;
+
+    try {
+      // Add the stranger to the "contacts" collection
+      await addDoc(collection(db, "Contacts"), {
+        name: item.name,
+        image: item.image, 
+        // Add any additional fields as needed
+      });
+
+      // Update the "temp" document to mark as contacted
+      await deleteDoc(doc(db, "temp", item.id));
+
+      // Update the local state for just this item
+      setTempData((prev) =>
+        prev.map((d) => (d.id === item.id ? { ...d, isContact: true } : d))
+      );
+      alert(`${item.name} has been added to your contact list!`);
+    } catch (err) {
+      console.error("Error adding to contacts: ", err);
+      alert("Failed to add to contacts. See console for details.");
+    }
+  };
+
+  // Handler for when the user chooses "No"
+  const handleDismissAlert = async (item: TempData) => {
+    try {
+      // Update the document to mark as contacted without adding to contacts
+      await deleteDoc(doc(db, "temp", item.id));
+
+      // Update the local state for just this item so its buttons disappear
+      setTempData((prev) =>
+        prev.map((d) => (d.id === item.id ? { ...d, isContact: true } : d))
+      );
+      alert(`You dismissed ${item.name} from contacts.`);
+    } catch (err) {
+      console.error("Error dismissing alert: ", err);
+      alert("Failed to dismiss alert. See console for details.");
+    }
+  };
+
+  return (
+    <Card title="Alerts">
+      {loading && <p>Loading alerts...</p>}
+      {!loading && tempData.length === 0 && <p className="textquestion">No alerts found.</p>}
+      {!loading && tempData.length > 0 && (
+        <ul>
+          {tempData.map((item) => (
+            <li key={item.id} style={{ marginBottom: "1rem" }}>
+              <p className="textquestion">Name: {item.name || "Unknown"}</p>
+              {/* Only show the question if this stranger hasn't been processed yet */}
+              {!item.isContact && (
+                <div>
+                  <p className="textquestion">
+                    Add {item.name || "this stranger"} to your contact list?
+                  </p>
+                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <button onClick={() => handleAddToContacts(item)}>
+                      Yes
+                    </button>
+                    <button onClick={() => handleDismissAlert(item)}>
+                      No
+                    </button>
+                  </div>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </Card>
   );
 };
 
@@ -58,12 +172,10 @@ const ActivityChart: React.FC = () => {
 
           if (data.time) {
             let date: Date;
-            console.log("Time : " + data.time);
 
             // 1. If it's already a Firestore Timestamp
             if (data.time instanceof Timestamp) {
               date = data.time.toDate()
-              console.log("Date : " + date); 
             }
             // 2. If it's an object with { seconds, nanoseconds } but not recognized as an instance of Timestamp
             else if (
@@ -111,19 +223,6 @@ const ActivityChart: React.FC = () => {
   if (!chartData) {
     return <div>Loading...</div>;
   }
-
-
-  //const labels = Array.from({ length: 24 }, (_, i) => `${i}:00`);
-  //const data = {
-    //labels,
-    //datasets: [
-      //{
-        //label: "Visits",
-        //data: [5, 10, 8, 12, 15, 7, 3, 4, 8, 16, 20, 18, 10, 5, 2, 0, 3, 7, 9, 11, 14, 16, 12, 8],
-       // backgroundColor: "#4F90FF", // Blue with good contrast
-     // },
-   // ],
-  //};
 
   const options = {
     responsive: true,
@@ -302,7 +401,7 @@ const Dashboard: React.FC = () => {
         <section className="left-column">
           {/* Alerts */}
           <Card title="Alerts" value="You have 5 new alerts" />
-
+          <AlertBox />
           {/* Notes */}
           <NotesCard />
         </section>

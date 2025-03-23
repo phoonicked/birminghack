@@ -16,6 +16,10 @@
     min-height: 100vh;
     background-color: #f9fafb; /* optional light background */
   }
+
+  .textquestion{
+    color: black;
+  }
   
   /* Greeting */
   .dashboard-greeting {
