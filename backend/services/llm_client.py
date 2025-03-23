@@ -28,3 +28,13 @@ def call_llm_identity_endpoint(text):
     else:
         print("Error calling llm_identity endpoint:", response.text)
         return "Unknown visitor"
+    
+def call_llm_get_name_desc_endpoint(text):
+    url = "http://localhost:5000/llm_get_name_desc"
+    params = {"text": text}
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print("Error calling llm_get_name_desc endpoint:", response.text)
+        return {"error": "Unknown visitor"}

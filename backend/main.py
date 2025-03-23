@@ -9,7 +9,9 @@ import threading
 from urllib.parse import urlparse
 import firebase_admin
 from firebase_admin import credentials, firestore
-from openvino.runtime import Core  # Deprecation note: replace with "from openvino import Core" in the future
+from openvino.runtime import Core
+
+from backend.services.llm_client import call_llm_get_name_desc_endpoint  # Deprecation note: replace with "from openvino import Core" in the future
 
 # 1. Add the parent directory so we can import systemFlow.py
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -54,7 +56,7 @@ def add_contact_to_firestore(doc_id, name, image_url):
     doc_ref = db.collection("Contacts").document(doc_id)
     doc_ref.set({
         "name": name,
-        "image": image_url
+        "image": image_url,
     })
     print(f"Added to Firestore: {doc_id} -> {name}, {image_url}")
 
