@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from "react";
 import "./Dashboard.css"; // Import the Dashboard CSS
 import {
+  Chart as ChartJS,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Bar } from "react-chartjs-2";
+import {
   collection,
   addDoc,
   getDocs,
@@ -12,39 +22,80 @@ import {
 import { db } from "../src/api/firebase";
 import { FaEdit, FaTrash, FaCheck, FaTimes } from "react-icons/fa";
 
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
+/** CardProps for the reusable Card component */
 interface CardProps {
   title: string;
-  value: string;
+  value?: string;
+  children?: React.ReactNode;
 }
 
+const Card: React.FC<CardProps> = ({ title, value, children }) => {
+  return (
+    <div className="card">
+      <h2 className="card-title">{title}</h2>
+      {value ? <p className="card-value">{value}</p> : children}
+    </div>
+  );
+};
+
+/** ActivityChart: Bar chart with mock hourly data */
+const ActivityChart: React.FC = () => {
+  const labels = Array.from({ length: 24 }, (_, i) => `${i}:00`);
+  const data = {
+    labels,
+    datasets: [
+      {
+        label: "Visits",
+        data: [5, 10, 8, 12, 15, 7, 3, 4, 8, 16, 20, 18, 10, 5, 2, 0, 3, 7, 9, 11, 14, 16, 12, 8],
+        backgroundColor: "#4F90FF", // Blue with good contrast
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      title: {
+        display: true,
+        text: "Hourly Visits",
+        font: { size: 16 },
+      },
+    },
+    scales: {
+      y: { beginAtZero: true, ticks: { precision: 0 } },
+    },
+  };
+
+  return (
+    <div
+      className="activity-chart-container"
+      role="img"
+      aria-label="Bar chart showing the number of visits per hour over 24 hours"
+    >
+      <Bar data={data} options={options} />
+    </div>
+  );
+};
+
+/** Note interface */
 interface Note {
   id: string;
   text: string;
   createdAt?: any;
 }
 
-const Card: React.FC<CardProps> = ({ title, value }) => {
-  return (
-    <div className="card">
-      <h2 className="card-title">{title}</h2>
-      <p className="card-value">{value}</p>
-    </div>
-  );
-};
-
+/** NotesCard: Manages adding, editing, deleting notes */
 const NotesCard: React.FC = () => {
-  // State for creating a new note
   const [note, setNote] = useState("");
   const [noteMessage, setNoteMessage] = useState("");
-
-  // State for fetched notes
   const [notes, setNotes] = useState<Note[]>([]);
-
-  // State for editing a note
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [editingNoteText, setEditingNoteText] = useState("");
 
-  // Fetch notes from Firestore
   const fetchNotes = async () => {
     try {
       const notesCollection = collection(db, "notes");
@@ -63,7 +114,6 @@ const NotesCard: React.FC = () => {
     fetchNotes();
   }, []);
 
-  // Add new note
   const handleNoteSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -80,7 +130,6 @@ const NotesCard: React.FC = () => {
     }
   };
 
-  // Delete a note
   const handleDeleteNote = async (id: string) => {
     try {
       await deleteDoc(doc(db, "notes", id));
@@ -92,13 +141,11 @@ const NotesCard: React.FC = () => {
     }
   };
 
-  // Start editing a note
   const handleEditNote = (id: string, currentText: string) => {
     setEditingNoteId(id);
     setEditingNoteText(currentText);
   };
 
-  // Update an existing note
   const handleUpdateNote = async (id: string) => {
     try {
       const noteRef = doc(db, "notes", id);
@@ -114,8 +161,7 @@ const NotesCard: React.FC = () => {
   };
 
   return (
-    <div className="card notes-card">
-      <h2 className="card-title">Notes</h2>
+    <Card title="Notes">
       <form onSubmit={handleNoteSubmit} className="notes-form">
         <textarea
           className="notes-textarea"
@@ -140,16 +186,10 @@ const NotesCard: React.FC = () => {
                   onChange={(e) => setEditingNoteText(e.target.value)}
                 />
                 <div className="note-actions">
-                  <button
-                    onClick={() => handleUpdateNote(n.id)}
-                    className="note-update-btn"
-                  >
+                  <button onClick={() => handleUpdateNote(n.id)} className="note-update-btn">
                     <FaCheck />
                   </button>
-                  <button
-                    onClick={() => setEditingNoteId(null)}
-                    className="note-cancel-btn"
-                  >
+                  <button onClick={() => setEditingNoteId(null)} className="note-cancel-btn">
                     <FaTimes />
                   </button>
                 </div>
@@ -170,25 +210,40 @@ const NotesCard: React.FC = () => {
           </div>
         ))}
       </div>
-    </div>
+    </Card>
   );
 };
 
+/** Main Dashboard Component */
 const Dashboard: React.FC = () => {
   const username = "John Doe"; // Mock username
 
   return (
-    <div className="dashboard">
+    <main className="dashboard">
       <h1 className="dashboard-greeting">Hey, {username}</h1>
-      <div className="cards-grid">
-        {/* 1) Left-Top: Alerts */}
-        <Card title="Alerts" value="You have 5 new alerts" />
-        {/* 2) Right (spans two rows): Activity */}
-        <Card title="Activity" value="Active for 3 hours today" />
-        {/* 3) Left-Bottom: Notes with embedded form and list */}
-        <NotesCard />
+
+      {/* 
+        We'll split the layout into two columns:
+          - Left column for Alerts + Notes
+          - Right column for Activity chart
+      */}
+      <div className="dashboard-grid">
+        <section className="left-column">
+          {/* Alerts */}
+          <Card title="Alerts" value="You have 5 new alerts" />
+
+          {/* Notes */}
+          <NotesCard />
+        </section>
+
+        <section className="right-column">
+          {/* Activity (Bar Chart) */}
+          <Card title="Activity">
+            <ActivityChart />
+          </Card>
+        </section>
       </div>
-    </div>
+    </main>
   );
 };
 

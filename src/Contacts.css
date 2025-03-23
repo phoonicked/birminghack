@@ -2,8 +2,8 @@
 
 /* Overall container mimicking the screenshot's spacing and background */
 .contacts-container {
-    background-color: #f1f5f9;
     min-height: 100vh;
+    width: 100vw;
     padding: 2rem;
     position: relative;
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
