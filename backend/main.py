@@ -13,7 +13,7 @@ from openvino.runtime import Core
 
 from services.llm_client import call_llm_get_name_desc_endpoint  
 
-# 1. Add the parent directory so we can import systemFlow.py
+# 1. python -m venv openvino_env the parent directory so we can import systemFlow.py
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if parent_dir not in sys.path:
     sys.path.append(parent_dir)
