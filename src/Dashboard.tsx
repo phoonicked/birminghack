@@ -131,7 +131,8 @@ const AlertBox: React.FC = () => {
       {loading && <p>Loading alerts...</p>}
       {!loading && tempData.length === 0 && <p className="textquestion">No alerts found.</p>}
       {!loading && tempData.length > 0 && (
-        <ul>
+         <div className="alerts-container">
+        <ul>  
           {tempData.map((item) => (
             <li key={item.id} style={{ marginBottom: "1rem" }}>
               <p className="textquestion">Name: {item.name || "Unknown"}</p>
@@ -145,11 +146,11 @@ const AlertBox: React.FC = () => {
                     Description: {item.description || "No description available."}
                   </p>
 
-                  <div style={{ display: "flex", gap: "0.5rem" }}>
-                    <button onClick={() => handleAddToContacts(item)}>
+                  <div className = "alert-description" style={{ display: "flex", gap: "0.5rem" }}>
+                    <button className="alert-button" onClick={() => handleAddToContacts(item)}>
                       Yes
                     </button>
-                    <button onClick={() => handleDismissAlert(item)}>
+                    <button className="alert-button" onClick={() => handleDismissAlert(item)}>
                       No
                     </button>
                   </div>
@@ -158,6 +159,7 @@ const AlertBox: React.FC = () => {
             </li>
           ))}
         </ul>
+      </div>
       )}
     </Card>
   );
