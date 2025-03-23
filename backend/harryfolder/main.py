@@ -2,6 +2,39 @@ import cv2
 import os
 import numpy as np
 from openvino.runtime import Core
+import requests
+import base64
+import firebase_admin
+from firebase_admin import credentials, firestore
+
+cred = credentials.Certificate("../brumhack.json")
+firebase_admin.initialize_app(cred)
+db = firestore.client()
+
+def upload_to_imagebb(image_path):
+    """Uploads an image to ImageBB and returns the URL."""
+    with open(image_path, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
+
+    url = "https://api.imgbb.com/1/upload"
+    payload = {"key": "adf49cd5eb7ee8c50f38ebb785fc49d4", "image": encoded_string}
+    response = requests.post(url, payload)
+    
+    if response.status_code == 200:
+        return response.json().get("data", {}).get("url")
+    else:
+        print("Failed to upload:", response.text)
+        return None
+    
+def add_contact_to_firestore(doc_id, name, image_url):
+    """Adds a new document to Firestore inside the 'contacts' collection."""
+    doc_ref = db.collection("Contacts").document(doc_id)  # Create a document with a specific ID
+    doc_ref.set({
+        "name": name,       # Face name (e.g., "face3")
+        "image": image_url  # Image URL
+    })
+    print(f"Added to Firestore: {doc_id} -> {name}, {image_url}")
+
 
 # Initialize OpenVINO Core
 ie = Core()
@@ -84,6 +117,7 @@ def find_best_match(face_embedding, position):
 
 # Open webcam for real-time detection
 cap = cv2.VideoCapture(0)
+last_saved_face = None
 
 while cap.isOpened():
     ret, frame = cap.read()
@@ -179,10 +213,20 @@ while cap.isOpened():
                 print(f"Error removing file: {e}")
         del tracked_faces[face_id]
 
-    # Display webcam feed.
+    # Display webcam feed.  
     cv2.imshow("Face Tracking (ESC to Exit)", frame)
     if cv2.waitKey(1) & 0xFF == 27:
         print("Exiting...")
+        if new_id in stored_faces:
+            image_url = upload_to_imagebb(os.path.join(FACE_DATABASE, new_id))
+            print(image_url)
+        if image_url:
+            print(f"Uploaded Image URL: {image_url}")
+            add_contact_to_firestore(new_id.replace(".jpg", ""), new_id, image_url)  # Upload to Firestore
+        else:
+            print("Image upload failed.")
+
+
         break
 
 cap.release()
