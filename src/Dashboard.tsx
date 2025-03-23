@@ -15,6 +15,7 @@ import {
   addDoc,
   getDocs,
   serverTimestamp,
+  Timestamp,
   doc,
   updateDoc,
   deleteDoc,
@@ -40,19 +41,89 @@ const Card: React.FC<CardProps> = ({ title, value, children }) => {
   );
 };
 
+
 /** ActivityChart: Bar chart with mock hourly data */
 const ActivityChart: React.FC = () => {
-  const labels = Array.from({ length: 24 }, (_, i) => `${i}:00`);
-  const data = {
-    labels,
-    datasets: [
-      {
-        label: "Visits",
-        data: [5, 10, 8, 12, 15, 7, 3, 4, 8, 16, 20, 18, 10, 5, 2, 0, 3, 7, 9, 11, 14, 16, 12, 8],
-        backgroundColor: "#4F90FF", // Blue with good contrast
-      },
-    ],
-  };
+  const [chartData, setChartData] = useState<any>(null);
+
+  
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const querySnapshot = await getDocs(collection(db, "dayharry"));
+        const counts = new Array(24).fill(0);
+
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+
+          if (data.time) {
+            let date: Date;
+            console.log("Time : " + data.time);
+
+            // 1. If it's already a Firestore Timestamp
+            if (data.time instanceof Timestamp) {
+              date = data.time.toDate()
+              console.log("Date : " + date); 
+            }
+            // 2. If it's an object with { seconds, nanoseconds } but not recognized as an instance of Timestamp
+            else if (
+              typeof data.time === "object" &&
+              data.time.seconds !== undefined &&
+              data.time.nanoseconds !== undefined
+            ) {
+              // Construct a Timestamp manually
+              const ts = new Timestamp(data.time.seconds, data.time.nanoseconds);
+              date = ts.toDate();
+            }
+            // 3. Otherwise, assume it's a string
+            else {
+              date = new Date(data.time);
+            }
+
+            // If it's a valid date, increment the corresponding hour
+            if (!isNaN(date.getTime())) {
+              const hour = date.getHours();
+              counts[hour]++;
+            }
+          }
+        });
+
+        const labels = Array.from({ length: 24 }, (_, i) => `${i}:00`);
+
+        setChartData({
+          labels,
+          datasets: [
+            {
+              label: "Visits",
+              data: counts,
+              backgroundColor: "#4F90FF",
+            },
+          ],
+        });
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  if (!chartData) {
+    return <div>Loading...</div>;
+  }
+
+
+  //const labels = Array.from({ length: 24 }, (_, i) => `${i}:00`);
+  //const data = {
+    //labels,
+    //datasets: [
+      //{
+        //label: "Visits",
+        //data: [5, 10, 8, 12, 15, 7, 3, 4, 8, 16, 20, 18, 10, 5, 2, 0, 3, 7, 9, 11, 14, 16, 12, 8],
+       // backgroundColor: "#4F90FF", // Blue with good contrast
+     // },
+   // ],
+  //};
 
   const options = {
     responsive: true,
@@ -76,7 +147,7 @@ const ActivityChart: React.FC = () => {
       role="img"
       aria-label="Bar chart showing the number of visits per hour over 24 hours"
     >
-      <Bar data={data} options={options} />
+      <Bar data={chartData} options={options} />
     </div>
   );
 };
