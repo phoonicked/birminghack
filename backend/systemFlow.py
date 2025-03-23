@@ -1,3 +1,4 @@
+from services.speech_recognition import listen_for_speech
 from utils.notes_utils import fetch_notes
 from services.tts_client import call_tts_endpoint
 from services.llm_client import call_llm_endpoint, call_llm_identity_endpoint
@@ -8,9 +9,9 @@ def check_contact():
     Placeholder function simulating a contact check.
     Returns (True, name) if the person is in contacts, otherwise (False, None).
     """
-    answer = input("Is the detected person in contacts? (Y/N): ").strip().lower()
-    if answer == 'y':
-        name = input("Enter the contact's name: ").strip()
+    answer = listen_for_speech("Is the detected person in contacts? Please say 'yes' or 'no'.")
+    if answer.lower().startswith("y"):
+        name = listen_for_speech("Please state the contact's name.")
         return True, name
     else:
         return False, None
@@ -29,17 +30,15 @@ def main_flow():
     if in_contacts and name:
         tts_text = f"Hi, {name}! How can I help you?"
         instructions = (
-            "You are a smart AI doorbell and door lock system. "
-            "When a known contact speaks at the door, greet them warmly and helpfully. "
-            "Respond in a friendly and polite tone, and ask them how you can assist them. "
+             "You are a friendly AI doorbell. Greet known contacts warmly and offer help, keeping your responses brief and conversational."
             f"Always respond to {name} with a friendly tone."
         )
     else:
         tts_text = "Hi, how can I help you?"
         instructions = (
-            "You are a smart AI doorbell and door lock system. "
-            "When an unknown person speaks at the door, greet them formally and cautiously. "
-            "Ask them to identify themselves, and maintain a secure tone while verifying their identity."
+            "You are an AI doorbell. Greet unknown visitors formally and ask for their identification. "
+            "If the visitor says they are a delivery worker, simply reply, 'Could you put your delivery to the porch?' "
+            "Keep responses concise and to the point. "
             f"{extra_info}"
         )
 
@@ -53,7 +52,7 @@ def main_flow():
 
     # Step 4: If unknown visitor, listen for their identity and update instructions.
     if not in_contacts:
-        identity_input = input("Simulated microphone input for identity - Please state your identity: ").strip()
+        identity_input = listen_for_speech("Please state your identity.")
         identity = call_llm_identity_endpoint(identity_input)
         print(f"Identified as: {identity}")
         # Update instructions to include the identified identity.
@@ -68,7 +67,7 @@ def main_flow():
     # Step 5: Enter a conversation loop until the user stops.
     # Here we accumulate conversation context into the instructions.
     while True:
-        user_input = input("Simulated microphone input - What did the person say? (type 'exit' or 'quit' to stop): ").strip()
+        user_input = listen_for_speech("What did the person say? Say 'exit' or 'quit' to stop.")
         if user_input.lower() in ["exit", "quit"]:
             print("Exiting conversation loop.")
             break
