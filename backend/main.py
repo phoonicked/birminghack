@@ -11,7 +11,6 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 from openvino.runtime import Core
 
-from backend.services.llm_client import call_llm_get_name_desc_endpoint  # Deprecation note: replace with "from openvino import Core" in the future
 
 # 1. Add the parent directory so we can import systemFlow.py
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
