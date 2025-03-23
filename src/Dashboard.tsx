@@ -36,6 +36,7 @@ interface TempData {
   name?: string;
   image?: string;
   isContact?: boolean;
+  description?: string;
 }
 
 const Card: React.FC<CardProps> = ({ title, value, children }) => {
@@ -66,6 +67,7 @@ const AlertBox: React.FC = () => {
             name: data.name,
             isContact: data.isContact,
             image: data.image,
+            description: data.description
           });
         });
 
@@ -88,6 +90,7 @@ const AlertBox: React.FC = () => {
       await addDoc(collection(db, "Contacts"), {
         name: item.name,
         image: item.image, 
+        description: item.description,
         // Add any additional fields as needed
       });
 
@@ -400,7 +403,6 @@ const Dashboard: React.FC = () => {
       <div className="dashboard-grid">
         <section className="left-column">
           {/* Alerts */}
-          <Card title="Alerts" value="You have 5 new alerts" />
           <AlertBox />
           {/* Notes */}
           <NotesCard />
