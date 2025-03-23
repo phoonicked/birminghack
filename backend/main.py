@@ -29,7 +29,11 @@ except ImportError as e:
 try:
     firebase_admin.get_app()
 except ValueError:
+<<<<<<< HEAD:backend/harryfolder/main.py
     cred = credentials.Certificate(os.path.join(parent_dir, "brumhack.json"))
+=======
+    cred = credentials.Certificate("brumhack.json")
+>>>>>>> ef48e4493399e39727cd3603f7cebe5207c5dde2:backend/main.py
     firebase_admin.initialize_app(cred)
 db = firestore.client()
 
