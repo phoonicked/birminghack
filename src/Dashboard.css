@@ -36,7 +36,7 @@
   */
   .dashboard-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* left column is 320px wide, right column takes the rest */
+    grid-template-columns: 500px 2fr; /* left column is 320px wide, right column takes the rest */
     gap: 1.5rem;
   }
   
@@ -80,7 +80,7 @@
   
   /* Activity chart container inside the card */
   .activity-chart-container {
-    width: 1050px;
+    width: 900px;
     height: 740px; /* Increase height to show more of the chart */
     position: relative;
   }

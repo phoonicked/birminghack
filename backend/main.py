@@ -11,7 +11,10 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 from openvino.runtime import Core
 
-from services.llm_client import call_llm_get_name_desc_endpoint  
+from services.llm_client import call_llm_get_name_desc_endpoint
+
+last_detected_image_url = None
+last_detected_doc_id = None
 
 # 1. python -m venv openvino_env the parent directory so we can import systemFlow.py
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -51,13 +54,14 @@ def upload_to_imagebb(image_path):
         print("Failed to upload:", response.text)
         return None
 
-def add_contact_to_firestore(doc_id, name, image_url, description):
+def add_contact_to_firestore(doc_id, name, image_url, description, isContact=False):
     """Adds a new document to Firestore inside the 'Contacts' collection."""
     doc_ref = db.collection("Contacts").document(doc_id)
     doc_ref.set({
         "name": name,
         "image": image_url,
-        "description": description
+        "description": description,
+        "isContact": isContact
     })
     print(f"Added to Firestore: {doc_id} -> {name}, {image_url}")
 
@@ -166,6 +170,7 @@ doorbell_stop_event = threading.Event()  # We'll pass this into main_flow
 
 def main():
     global doorbell_flow_called, doorbell_thread, last_face_time, final_instructions
+    global last_detected_image_url, last_detected_doc_id
 
     known_contact = False
     contact_name = None
@@ -179,11 +184,20 @@ def main():
 
     cap = cv2.VideoCapture(0)
     SIMILARITY_THRESHOLD = 0.15
+    filename = None
+    last_refresh_time = time.time()  # Track when we last refreshed face data
 
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
             break
+
+        # Refresh db_faces from Firestore every 10 seconds
+        current_time = time.time()
+        if current_time - last_refresh_time > 10:
+            db_faces = load_db_faces()
+            print(f"Refreshed face database: {len(db_faces)} faces loaded.")
+            last_refresh_time = current_time
 
         h, w = frame.shape[:2]
         frame_resized = cv2.resize(frame, (672, 384))
@@ -219,7 +233,8 @@ def main():
 
                 if best_match_id:
                     display_name = best_match_name
-                    known_contact = True
+                    # Add this check to determine if it's a real name or face{number}
+                    known_contact = not best_match_name.startswith("face")
                     contact_name = best_match_name
                 else:
                     known_contact = False
@@ -233,6 +248,8 @@ def main():
                     image_url = upload_to_imagebb(filename)
                     if image_url:
                         doc_id = new_id.replace(".jpg", "")
+                        last_detected_image_url = image_url
+                        last_detected_doc_id = doc_id
                         add_contact_to_firestore(doc_id, new_id, image_url, "")
                         new_emb = extract_face_embedding(face_cropped)
                         if new_emb is not None:
@@ -264,20 +281,29 @@ def main():
                 print("No face detected for 5 seconds. Stopping doorbell conversation.")
                 if doorbell_thread is not None:
                     doorbell_thread.join()
-                    image_url = upload_to_imagebb(filename)
-                    print("Final conversation context:")
-                    print(f'hewo {final_instructions}')
-                    llm_response = call_llm_get_name_desc_endpoint(final_instructions)
-                    name = llm_response['name']
-                    desc = llm_response['description']
-                    print(f"Name: {name}, Description: {desc}")
-                    # Check that doc_id and image_url exist before updating Firestore.
-                    if doc_id and image_url:
-                        add_contact_to_firestore(doc_id, name, image_url, desc)
+                    # Ensure filename exists before uploading
+                    if last_detected_doc_id and last_detected_image_url:
+                        llm_response = call_llm_get_name_desc_endpoint(final_instructions)
+                        name = llm_response['name']
+                        desc = llm_response['description']
+                        print(f"Name: {name}, Description: {desc}")
+                        print(f"Image URL: {last_detected_image_url}")
+                        print(f"Doc ID: {last_detected_doc_id}")
+                        add_contact_to_firestore(last_detected_doc_id, name, last_detected_image_url, desc)
+                        
+                        # Update local db_faces with the new name right away
+                        if last_detected_doc_id in db_faces:
+                            db_faces[last_detected_doc_id]["name"] = name
+                            print(f"Updated local face database with name: {name}")
                     else:
-                        print("No new face was registered, so no contact info to update.")
+                        print("No face was detected during this session.")
+
                 doorbell_flow_called = False
                 doorbell_stop_event.clear()
+                
+                # Refresh database after updating a contact
+                db_faces = load_db_faces()
+                print("Refreshed face database after conversation.")
 
     cap.release()
     cv2.destroyAllWindows()

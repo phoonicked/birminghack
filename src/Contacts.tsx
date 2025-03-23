@@ -7,6 +7,8 @@ import {
   doc,
   updateDoc,
   deleteDoc,
+  where,
+  query,
 } from "firebase/firestore";
 import { db } from "../src/api/firebase";
 import { AiOutlineUserAdd } from "react-icons/ai";
@@ -18,6 +20,8 @@ interface Contact {
   image: string; // Changed from telephone to image
   notes: string;
   id?: string;
+  isContact?: boolean;
+  description?: string;
 }
 
 const Contacts: React.FC = () => {
@@ -25,6 +29,8 @@ const Contacts: React.FC = () => {
     name: "",
     image: "",
     notes: "",
+    description: "",
+    isContact: true || false,
   });
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [message, setMessage] = useState<string>("");
@@ -36,8 +42,8 @@ const Contacts: React.FC = () => {
   }, []);
 
   const fetchContacts = async () => {
-    const contactsRef = collection(db, "Contacts");
-    const snapshot = await getDocs(contactsRef);
+    const q = query(collection(db, "Contacts"), where( "isContact", "==", true));
+    const snapshot = await getDocs(q);
     // Spread document data first, then set id to ensure it's not overridden.
     const contactsList: Contact[] = snapshot.docs.map((docSnap) => ({
       ...(docSnap.data() as Omit<Contact, "id">),
@@ -96,6 +102,9 @@ const Contacts: React.FC = () => {
           name: contact.name,
           image: contact.image,
           notes: contact.notes,
+          isContact: contact.isContact,
+          description: contact.description,
+          
         });
         setMessage("Contact updated successfully.");
       } else {
