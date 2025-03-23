@@ -1,61 +1,63 @@
-SecuriBot
+Ocular
+<p align="center"> <strong>Ocular</strong> is the first-ever AI agent that harnesses real-time detection to engage and document every interaction with your guests. With cutting-edge facial recognition and the power of the Neuphonic API, Ocular not only detects visitors as they approach but also initiates intelligent, voice-driven conversations. Every interaction is recorded and stored in a secure webapp, allowing you to review a comprehensive history of your guest engagements. </p>
 
-<p align="center">
-<strong>SecuriBot</strong> is an innovative, AI-powered security system designed to monitor your front lawn, detect visitors, and gather essential information about them. Using advanced facial recognition combined with the Neuphonic API, SecuriBot interacts with visitors through voice questions. It then processes their responses with a trained AI bot, responds accordingly, and saves the data to a webapp where the homeowner can view a detailed contact list of visitors.
-</p>
+## Key Features
 
-## Key Features:
+- **Real-Time AI Detection & Tracking** – Utilizes advanced facial recognition to instantly detect and monitor guests in real time.
 
-- **Advanced Face Detection & Tracking** – Utilises state-of-the-art facial recognition to monitor and track people approaching your home.
-- **Voice Interaction** – Engages visitors with voice prompts, asking targeted questions to gather information.
-- **AI-Powered Responses** – Processes visitor responses using a trained AI model that delivers personalized, context-aware feedback.
-- **Data Logging & Web Interface** – Securely saves visitor data (including images and conversation logs) in a cloud database, accessible via a user-friendly webapp.
-- **Real-Time Notifications** – Alerts the homeowner of visitors in real time, providing a comprehensive contact list for later review.
+- **Conversational Engagement** – Initiates natural, voice-based interactions with visitors, gathering valuable information through targeted questions
 
-## How Does SecuriBot Work?
+- **Intelligent Interaction Logging** – Every guest conversation, image, and data point is securely logged in the cloud for later review.
 
-SecuriBot continuously monitors the front lawn using a dedicated camera system. When a face is detected, the system initiates a conversation using the Neuphonic API to ask key questions about the visitor. Based on the responses, the AI bot generates tailored feedback and interactions. The system then logs all gathered data—images, names, and conversation details—to a web application, where the homeowner can review the contact list and visit history.
+- **Comprehensive Guest History** – Access a detailed, searchable contact list of all guest interactions via a user-friendly web interface.
 
-## Workflow:
+- **Instant Notifications** – Receive real-time alerts whenever a new guest is detected, keeping you always in the loop.
 
+## How Does Ocular Work?
+
+Ocular continuously monitors your home with a dedicated camera system. When a guest is detected, the system immediately initiates a conversation using the Neuphonic API. The AI agent asks key questions, processes the responses, and provides a tailored reply—all in real time. Every detail from the interaction—images, names, and conversation logs—is stored in a secure cloud-based system, giving you full visibility into who’s visiting and what was discussed.
+
+## Workflow
 Detection:
-The camera detects a face in the front lawn.
+
+The camera instantly detects a guest approaching your home.
 
 Interaction:
-The bot prompts the visitor with voice questions to gather identity and context.
+
+The AI agent starts a voice conversation, asking key questions to gather essential guest information.
 
 Response:
-The AI processes the answers, generates a suitable response, and communicates with the visitor via text-to-speech.
+
+The agent processes answers on the spot, generating context-aware responses using a trained AI model.
 
 Data Logging:
-All interactions, images, and gathered data are stored in the cloud.
+
+Every detail—images, interaction transcripts, and metadata—is logged securely in the cloud.
 
 Webapp Access:
-The homeowner navigates the webapp to review the visitor logs and manage the contact list.
 
-Demo Usage
-Follow these steps to see SecuriBot in action:
+Access and manage a comprehensive guest history through an intuitive, web-based interface.
 
-Start the System:
-Run the backend and webapp components of SecuriBot.
+## Demo Usage
+Follow these steps to experience Ocular in action:
 
-Monitor Your Front Lawn:
-The camera continuously scans for any visitors approaching the property.
+1. Start the System:
+Launch both the backend and the webapp components of Ocular.
 
-Engage with Visitors:
-Once a face is detected, SecuriBot automatically starts a conversation using voice prompts.
+2. Monitor Your Space:
+The camera continuously scans your home for approaching guests.
 
-If you’re testing, speak clearly to simulate a real visitor interaction.
+3. Engage with Guests:
+When a guest is detected, Ocular automatically initiates a conversation. For testing, speak clearly to simulate a real interaction.
 
-Review Visitor Data:
-After the interaction, log in to the webapp to see your updated contact list featuring visitor names, images, and conversation details.
+4. Review Interaction History:
+Log in to the webapp to view an up-to-date, detailed contact list that includes guest names, images, and conversation records.
 
-Manage Contacts:
-Use the web interface to filter, search, or remove visitor entries as needed.
+5. Manage Contacts:
+Use the web interface to search, filter, or remove guest entries as needed.
 
-## Experience with AI & Security
-
-Building SecuriBot has been an exciting challenge that merges computer vision, natural language processing, and real-time data management. Leveraging the Neuphonic API along with advanced AI models, the project not only improves home security but also transforms the way homeowners interact with visitors. Despite the technical challenges—from ensuring reliable face detection to handling voice recognition in various environmental conditions—the experience has been incredibly rewarding and has pushed the boundaries of what modern security systems can achieve.
+6. Experience with AI & Guest Engagement
+Building Ocular has been an exhilarating journey at the intersection of computer vision, natural language processing, and real-time data management. By leveraging the Neuphonic API and advanced AI models, we’ve redefined guest interaction from a static log into a dynamic, intelligent experience. Ocular transforms how you connect with those who visit—making every interaction count and paving the way for a smarter, more engaged home environment.
 
 ## Contact
 Kerem Uygun – keremuygun86@gmail.com
@@ -65,9 +67,3 @@ Bagus Alwan – bgslwn28@gmail.com
 Wilbert Tham – wilbertthxm@gmail.com
 
 Harry Day – hdkeyworth@gmail.com
-
-
-
-
-
-
