@@ -81,7 +81,7 @@
   /* Activity chart container inside the card */
   .activity-chart-container {
     width: 1050px;
-    height: 800px; /* Increase height to show more of the chart */
+    height: 740px; /* Increase height to show more of the chart */
     position: relative;
   }
   
