@@ -29,5 +29,5 @@ firebase.js
 /backend/brumhack.json
 /backend/.env
 /backend/harryfolder/openvino_env
-/harryfolder/face_database
+/backend/harryfolder/face_database
 
