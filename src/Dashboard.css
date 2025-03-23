@@ -16,10 +16,6 @@
     min-height: 100vh;
     background-color: #f9fafb; /* optional light background */
   }
-
-  .textquestion{
-    color: black;
-  }
   
   /* Greeting */
   .dashboard-greeting {
@@ -221,4 +217,87 @@
   .note-delete-btn:hover,
   .note-cancel-btn:hover {
     background: #d1d5db;
-  }  
+  } 
+
+  /* Container for the list of alerts */
+.alerts-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Each alert item */
+.alert-item {
+  background: #fefefe; /* Slight off-white for contrast against the card */
+  border: 1px solid #e5e7eb; /* Light gray border */
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: box-shadow 0.3s ease;
+}
+
+/* Hover effect for each alert item */
+.alert-item:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Title or name in the alert */
+.alert-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: #111827; /* Dark gray for better contrast */
+}
+
+/* Description or question text */
+.alert-description {
+  font-size: 1rem;
+  color: #374151;
+  margin-bottom: 0.75rem;
+}
+
+/* Container for Yes/No buttons */
+.alert-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* Shared button styling */
+.alert-button {
+  background: #000; /* Black background */
+  color: #fff;      /* White text */
+  border: none;
+  border-radius: 6px;
+  padding: 0.75rem 2.50rem; /* Increased padding for a bigger button */
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  min-width: 70px; /* Ensures buttons aren't too narrow */
+  text-align: center;
+}
+
+/* Hover effect */
+.alert-button:hover {
+  background-color: #333;
+}
+
+.alert-button.yes {
+  background-color: #000;
+}
+.alert-button.no {
+  background-color: #555;
+}
+
+
+/* Increase the font size for .textquestion if needed */
+.textquestion {
+  color: #000;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.alerts-container {
+  max-height: 400px; /* or any suitable height */
+  overflow-y: auto;  /* adds a vertical scrollbar when content exceeds the max height */
+  padding-right: 1rem; /* optional: add padding for scrollbar clearance */
+}
