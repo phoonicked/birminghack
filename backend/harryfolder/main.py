@@ -1,12 +1,27 @@
-import cv2
+import sys
 import os
+import cv2
 import numpy as np
-from openvino.runtime import Core  # Future: "from openvino import Core"
 import requests
 import base64
+import time
+import threading
+from urllib.parse import urlparse
 import firebase_admin
 from firebase_admin import credentials, firestore
-from urllib.parse import urlparse
+from openvino.runtime import Core  # Deprecation note: replace with "from openvino import Core" in the future
+
+# 1. Add the parent directory so we can import systemFlow.py
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if parent_dir not in sys.path:
+    sys.path.append(parent_dir)
+
+# 2. Try importing the doorbell conversation function
+try:
+    from systemFlow import main_flow
+except ImportError as e:
+    print("Error importing main_flow from systemFlow:", e)
+    main_flow = None
 
 ######################################
 # FIREBASE INITIALIZATION
@@ -14,7 +29,7 @@ from urllib.parse import urlparse
 try:
     firebase_admin.get_app()
 except ValueError:
-    cred = credentials.Certificate("../brumhack.json")
+    cred = credentials.Certificate(os.path.join(parent_dir, "brumhack.json"))
     firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -38,8 +53,8 @@ def add_contact_to_firestore(doc_id, name, image_url):
     """Adds a new document to Firestore inside the 'Contacts' collection."""
     doc_ref = db.collection("Contacts").document(doc_id)
     doc_ref.set({
-        "name": name,       # e.g. "face2.jpg"
-        "image": image_url  # URL from imgbb
+        "name": name,
+        "image": image_url
     })
     print(f"Added to Firestore: {doc_id} -> {name}, {image_url}")
 
@@ -48,15 +63,18 @@ def add_contact_to_firestore(doc_id, name, image_url):
 ######################################
 ie = Core()
 
-# Face Detection
-face_det_model_xml = "intel/face-detection-adas-0001/FP32/face-detection-adas-0001.xml"
+# Use the current (harryfolder) directory as base for the models.
+base_dir = os.path.dirname(__file__)
+
+# 1) Face Detection Model
+face_det_model_xml = os.path.join(base_dir, "intel", "face-detection-adas-0001", "FP32", "face-detection-adas-0001.xml")
 face_det_model_bin = face_det_model_xml.replace(".xml", ".bin")
 face_det_net = ie.read_model(model=face_det_model_xml, weights=face_det_model_bin)
 face_det_compiled = ie.compile_model(face_det_net, "CPU")
 face_det_output_layer = face_det_compiled.outputs[0]
 
-# Face Re-Identification
-reid_model_xml = "models/intel/face-reidentification-retail-0095/FP32/face-reidentification-retail-0095.xml"
+# 2) Face Re-Identification Model
+reid_model_xml = os.path.join(base_dir, "models", "intel", "face-reidentification-retail-0095", "FP32", "face-reidentification-retail-0095.xml")
 reid_model_bin = reid_model_xml.replace(".xml", ".bin")
 reid_net = ie.read_model(model=reid_model_xml, weights=reid_model_bin)
 reid_compiled = ie.compile_model(reid_net, "CPU")
@@ -84,7 +102,7 @@ def cosine_similarity(emb1, emb2):
     return np.dot(emb1, emb2).item()
 
 ######################################
-# FETCH ALREADY-STORED FACES FROM FIRESTORE
+# FIRESTORE FACES
 ######################################
 def is_valid_url(url):
     """Checks if the URL has a valid scheme (http or https)."""
@@ -127,19 +145,26 @@ def load_db_faces():
     return db_faces
 
 ######################################
-# REAL-TIME DETECTION
+# DOORBELL FLOW CONTROL (Using a threading.Event)
 ######################################
+doorbell_flow_called = False
+doorbell_thread = None
+last_face_time = time.time()
+doorbell_stop_event = threading.Event()  # We'll pass this into main_flow
+
 def main():
-    # Load DB face embeddings once at startup.
+    global doorbell_flow_called, doorbell_thread, last_face_time
+
+    known_contact = False
+    contact_name = None
+
     db_faces = load_db_faces()
     print(f"Loaded {len(db_faces)} faces from Firestore.")
 
-    # Directory for local face database (optional)
     FACE_DATABASE = "face_database"
     os.makedirs(FACE_DATABASE, exist_ok=True)
     face_counter = len(os.listdir(FACE_DATABASE))
 
-    # Start webcam
     cap = cv2.VideoCapture(0)
     SIMILARITY_THRESHOLD = 0.15
 
@@ -151,8 +176,6 @@ def main():
         h, w = frame.shape[:2]
         frame_resized = cv2.resize(frame, (672, 384))
         input_image = np.expand_dims(frame_resized.transpose(2, 0, 1), axis=0).astype(np.float32)
-
-        # Run face detection.
         results = face_det_compiled([input_image])[face_det_output_layer]
 
         for detection in results[0][0]:
@@ -168,7 +191,7 @@ def main():
                 if face_embedding is None:
                     continue
 
-                # Compare with Firestore DB faces.
+                # Compare with Firestore DB faces
                 best_match_id = None
                 best_match_name = None
                 best_score = -1.0
@@ -201,26 +224,43 @@ def main():
                         if new_emb is not None:
                             db_faces[doc_id] = {"name": new_id, "embedding": new_emb}
 
+                # Draw bounding box & label
                 cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
                 cv2.putText(frame, display_name, (xmin, ymin - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
+                # If doorbell flow not started, start it in a thread, passing the event
+                if main_flow and not doorbell_flow_called:
+                    doorbell_thread = threading.Thread(
+                        target=main_flow,
+                        args=(known_contact, contact_name, doorbell_stop_event)
+                    )
+                    doorbell_thread.start()
+                    doorbell_flow_called = True
+                    print("Doorbell conversation started.")
+
+                # Reset the timer on every face detection
+                last_face_time = time.time()
 
         cv2.imshow("Live Feed (Press ESC to exit)", frame)
         if cv2.waitKey(1) & 0xFF == 27:
             break
 
+        # Check if 5 seconds have passed with no face
+        if doorbell_flow_called and (time.time() - last_face_time > 5):
+            # Signal the doorbell conversation to stop
+            doorbell_stop_event.set()
+            print("No face detected for 5 seconds. Signaling doorbell conversation to stop.")
+
+            if doorbell_thread is not None:
+                doorbell_thread.join()
+
+            # Reset so we can start again if a new face appears
+            doorbell_flow_called = False
+            doorbell_stop_event.clear()
+
     cap.release()
     cv2.destroyAllWindows()
-
-    # Once the face detection & comparison is done, start the doorbell conversation.
-    # Import the conversation system (e.g., main_flow) from your doorbell module.
-    # For this example, we assume it is in systemFlow.py.
-    try:
-        from systemFlow import main_flow as doorbell_flow
-        print("Starting doorbell conversation system...")
-        doorbell_flow(known_contact, contact_name)
-    except Exception as e:
-        print("Error starting doorbell conversation system:", e)
 
 if __name__ == "__main__":
     main()
