@@ -11,7 +11,7 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 from openvino.runtime import Core
 
-from backend.services.llm_client import call_llm_get_name_desc_endpoint  # Deprecation note: replace with "from openvino import Core" in the future
+from services.llm_client import call_llm_get_name_desc_endpoint  
 
 # 1. Add the parent directory so we can import systemFlow.py
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -51,12 +51,13 @@ def upload_to_imagebb(image_path):
         print("Failed to upload:", response.text)
         return None
 
-def add_contact_to_firestore(doc_id, name, image_url):
+def add_contact_to_firestore(doc_id, name, image_url, description):
     """Adds a new document to Firestore inside the 'Contacts' collection."""
     doc_ref = db.collection("Contacts").document(doc_id)
     doc_ref.set({
         "name": name,
         "image": image_url,
+        "description": description
     })
     print(f"Added to Firestore: {doc_id} -> {name}, {image_url}")
 
@@ -102,6 +103,15 @@ def cosine_similarity(emb1, emb2):
     emb1 = emb1.flatten() / np.linalg.norm(emb1)
     emb2 = emb2.flatten() / np.linalg.norm(emb2)
     return np.dot(emb1, emb2).item()
+
+# global container for the result
+final_instructions = None
+
+def main_flow_wrapper(known_contact, contact_name, stop_event):
+    global final_instructions
+    # Call the main_flow function and store its return value
+    final_instructions = main_flow(known_contact, contact_name, stop_event)
+
 
 ######################################
 # FIRESTORE FACES
@@ -155,7 +165,7 @@ last_face_time = time.time()
 doorbell_stop_event = threading.Event()  # We'll pass this into main_flow
 
 def main():
-    global doorbell_flow_called, doorbell_thread, last_face_time
+    global doorbell_flow_called, doorbell_thread, last_face_time, final_instructions
 
     known_contact = False
     contact_name = None
@@ -193,7 +203,6 @@ def main():
                 if face_embedding is None:
                     continue
 
-                # Compare with Firestore DB faces
                 best_match_id = None
                 best_match_name = None
                 best_score = -1.0
@@ -204,6 +213,9 @@ def main():
                         best_score = score
                         best_match_id = doc_id
                         best_match_name = info["name"]
+
+                doc_id = None
+                image_url = None
 
                 if best_match_id:
                     display_name = best_match_name
@@ -221,45 +233,51 @@ def main():
                     image_url = upload_to_imagebb(filename)
                     if image_url:
                         doc_id = new_id.replace(".jpg", "")
-                        add_contact_to_firestore(doc_id, new_id, image_url)
+                        add_contact_to_firestore(doc_id, new_id, image_url, "")
                         new_emb = extract_face_embedding(face_cropped)
                         if new_emb is not None:
                             db_faces[doc_id] = {"name": new_id, "embedding": new_emb}
 
-                # Draw bounding box & label
                 cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
                 cv2.putText(frame, display_name, (xmin, ymin - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-                # If doorbell flow not started, start it in a thread, passing the event
+                # If doorbell conversation hasn't started, start it:
                 if main_flow and not doorbell_flow_called:
                     doorbell_thread = threading.Thread(
-                        target=main_flow,
+                        target=main_flow_wrapper,
                         args=(known_contact, contact_name, doorbell_stop_event)
                     )
                     doorbell_thread.start()
                     doorbell_flow_called = True
                     print("Doorbell conversation started.")
 
-                # Reset the timer on every face detection
                 last_face_time = time.time()
 
         cv2.imshow("Live Feed (Press ESC to exit)", frame)
         if cv2.waitKey(1) & 0xFF == 27:
             break
 
-        # Check if 5 seconds have passed with no face
+        # If no face detected for 5 seconds, stop conversation.
         if doorbell_flow_called and (time.time() - last_face_time > 5):
-            # Signal the doorbell conversation to stop
-            doorbell_stop_event.set()
-            print("No face detected for 5 seconds. Signaling doorbell conversation to stop.")
-
-            if doorbell_thread is not None:
-                doorbell_thread.join()
-
-            # Reset so we can start again if a new face appears
-            doorbell_flow_called = False
-            doorbell_stop_event.clear()
+                doorbell_stop_event.set()
+                print("No face detected for 5 seconds. Stopping doorbell conversation.")
+                if doorbell_thread is not None:
+                    doorbell_thread.join()
+                    image_url = upload_to_imagebb(filename)
+                    print("Final conversation context:")
+                    print(f'hewo {final_instructions}')
+                    llm_response = call_llm_get_name_desc_endpoint(final_instructions)
+                    name = llm_response['name']
+                    desc = llm_response['description']
+                    print(f"Name: {name}, Description: {desc}")
+                    # Check that doc_id and image_url exist before updating Firestore.
+                    if doc_id and image_url:
+                        add_contact_to_firestore(doc_id, name, image_url, desc)
+                    else:
+                        print("No new face was registered, so no contact info to update.")
+                doorbell_flow_called = False
+                doorbell_stop_event.clear()
 
     cap.release()
     cv2.destroyAllWindows()
