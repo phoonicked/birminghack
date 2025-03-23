@@ -34,5 +34,6 @@ firebase.js
 .env
 /backend/harryfolder/openvino_env
 /backend/harryfolder/face_database
+/backend/face_database
 
 openvino_env
