@@ -3,7 +3,6 @@ from services.speech_recognition import listen_for_speech
 from utils.notes_utils import fetch_notes
 from services.tts_client import call_tts_endpoint
 from services.llm_client import call_llm_endpoint, call_llm_identity_endpoint
-from services.audio_player import play_audio
 
 person = False
 
