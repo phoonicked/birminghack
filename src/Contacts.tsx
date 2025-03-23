@@ -15,7 +15,7 @@ import "./Contacts.css";
 
 interface Contact {
   name: string;
-  telephone: string;
+  image: string; // Changed from telephone to image
   notes: string;
   id?: string;
 }
@@ -23,7 +23,7 @@ interface Contact {
 const Contacts: React.FC = () => {
   const [contact, setContact] = useState<Contact>({
     name: "",
-    telephone: "",
+    image: "",
     notes: "",
   });
   const [contacts, setContacts] = useState<Contact[]>([]);
@@ -49,7 +49,7 @@ const Contacts: React.FC = () => {
 
   /** Opens the modal with blank fields for adding a new contact. */
   const handleOpenAddModal = () => {
-    setContact({ name: "", telephone: "", notes: "" });
+    setContact({ name: "", image: "", notes: "" });
     setEditingId(null);
     setShowModal(true);
   };
@@ -94,7 +94,7 @@ const Contacts: React.FC = () => {
         const contactDocRef = doc(db, "Contacts", editingId);
         await updateDoc(contactDocRef, {
           name: contact.name,
-          telephone: contact.telephone,
+          image: contact.image,
           notes: contact.notes,
         });
         setMessage("Contact updated successfully.");
@@ -106,7 +106,7 @@ const Contacts: React.FC = () => {
       }
       setShowModal(false);
       setEditingId(null);
-      setContact({ name: "", telephone: "", notes: "" });
+      setContact({ name: "", image: "", notes: "" });
       await fetchContacts();
     } catch (error) {
       console.error("Error adding/updating contact:", error);
@@ -134,7 +134,12 @@ const Contacts: React.FC = () => {
           <div key={c.id} className="contact-card">
             <div className="contact-info">
               <h3>{c.name}</h3>
-              <p>{c.telephone}</p>
+              {/* Display the image instead of telephone text */}
+              <img
+                className="contact-image"
+                src={c.image}
+                alt={c.name}
+              />
             </div>
             <div className="contact-extra">
               <span className="notes-label">Notes</span>
@@ -180,14 +185,15 @@ const Contacts: React.FC = () => {
                   required
                 />
               </div>
+              {/* Change label and input from Telephone to Image URL */}
               <div className="form-group">
-                <label htmlFor="telephone">Telephone:</label>
+                <label htmlFor="image">Image URL:</label>
                 <input
                   className="input-field"
-                  id="telephone"
-                  name="telephone"
+                  id="image"
+                  name="image"
                   type="text"
-                  value={contact.telephone}
+                  value={contact.image}
                   onChange={handleChange}
                   required
                 />
