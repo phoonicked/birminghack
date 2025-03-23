@@ -1,8 +1,8 @@
+from utils.add_timestamp import add_timestamp_to_dayharry
 from services.speech_recognition import listen_for_speech
 from utils.notes_utils import fetch_notes
 from services.tts_client import call_tts_endpoint
 from services.llm_client import call_llm_endpoint, call_llm_identity_endpoint
-from services.audio_player import play_audio
 
 person = False
 
@@ -19,6 +19,8 @@ def check_contact():
         return False, None
 
 def main_flow():
+
+    add_timestamp_to_dayharry()
     # Simulate the event: a camera detects a person.
     print("Camera detected a person.")
 
