@@ -135,6 +135,7 @@ while cap.isOpened():
     for detection in results[0][0]:
         confidence = detection[2]
         if confidence > 0.8:
+            
             xmin, ymin, xmax, ymax = (detection[3:] * np.array([w, h, w, h])).astype(int)
             xmin, ymin, xmax, ymax = max(0, xmin), max(0, ymin), min(w, xmax), min(h, ymax)
             face_cropped = frame[ymin:ymax, xmin:xmax]
