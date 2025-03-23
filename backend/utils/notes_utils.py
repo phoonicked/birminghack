@@ -1,20 +1,13 @@
-import firebase_admin
-from firebase_admin import credentials, firestore
-
-# Initialize the Firebase Admin SDK with your service account key.
-cred = credentials.Certificate("./brumhack.json")
-firebase_admin.initialize_app(cred)
-
-# Create a Firestore client.
-db = firestore.client()
+from .firebase_init import get_firestore_client
 
 def fetch_notes():
     """
     Fetches all notes from the 'notes' collection.
-    
+
     Returns:
         A list of dictionaries, each containing the note's document ID and text.
     """
+    db = get_firestore_client()
     notes_ref = db.collection('notes')
     docs = notes_ref.stream()
     notes = []
@@ -28,6 +21,7 @@ def fetch_notes():
     return notes
 
 if __name__ == '__main__':
+    # Example usage
     notes = fetch_notes()
     print("Fetched notes:")
     for note in notes:

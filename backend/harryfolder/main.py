@@ -109,7 +109,6 @@ def load_db_faces():
         if not image_url or not is_valid_url(image_url):
             continue
 
-        # Download the image from the URL
         try:
             resp = requests.get(image_url)
             if resp.status_code == 200:
@@ -131,7 +130,7 @@ def load_db_faces():
 # REAL-TIME DETECTION
 ######################################
 def main():
-    # Load DB face embeddings once at startup
+    # Load DB face embeddings once at startup.
     db_faces = load_db_faces()
     print(f"Loaded {len(db_faces)} faces from Firestore.")
 
@@ -153,7 +152,7 @@ def main():
         frame_resized = cv2.resize(frame, (672, 384))
         input_image = np.expand_dims(frame_resized.transpose(2, 0, 1), axis=0).astype(np.float32)
 
-        # Run face detection
+        # Run face detection.
         results = face_det_compiled([input_image])[face_det_output_layer]
 
         for detection in results[0][0]:
@@ -169,7 +168,7 @@ def main():
                 if face_embedding is None:
                     continue
 
-                # Compare with Firestore DB faces
+                # Compare with Firestore DB faces.
                 best_match_id = None
                 best_match_name = None
                 best_score = -1.0
@@ -182,29 +181,26 @@ def main():
                         best_match_name = info["name"]
 
                 if best_match_id:
-                    # We found a match in the Firestore database
                     display_name = best_match_name
-                    # Do NOT add a new contact since it already exists
+                    known_contact = True
+                    contact_name = best_match_name
                 else:
-                    # No match found, register new face
+                    known_contact = False
+                    contact_name = None
                     face_counter += 1
                     new_id = f"face{face_counter}.jpg"
                     filename = os.path.join(FACE_DATABASE, new_id)
                     cv2.imwrite(filename, face_cropped)
                     display_name = new_id
 
-                    # 1) Upload to imgbb
                     image_url = upload_to_imagebb(filename)
                     if image_url:
-                        # 2) Add to Firestore
-                        doc_id = new_id.replace(".jpg", "")  # e.g., "face5"
+                        doc_id = new_id.replace(".jpg", "")
                         add_contact_to_firestore(doc_id, new_id, image_url)
-                        # 3) Also update db_faces in memory so we recognize next time
                         new_emb = extract_face_embedding(face_cropped)
                         if new_emb is not None:
                             db_faces[doc_id] = {"name": new_id, "embedding": new_emb}
 
-                # Draw bounding box and label
                 cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
                 cv2.putText(frame, display_name, (xmin, ymin - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
@@ -215,6 +211,16 @@ def main():
 
     cap.release()
     cv2.destroyAllWindows()
+
+    # Once the face detection & comparison is done, start the doorbell conversation.
+    # Import the conversation system (e.g., main_flow) from your doorbell module.
+    # For this example, we assume it is in systemFlow.py.
+    try:
+        from systemFlow import main_flow as doorbell_flow
+        print("Starting doorbell conversation system...")
+        doorbell_flow(known_contact, contact_name)
+    except Exception as e:
+        print("Error starting doorbell conversation system:", e)
 
 if __name__ == "__main__":
     main()
