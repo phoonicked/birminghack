@@ -5,6 +5,8 @@ from services.tts_client import call_tts_endpoint
 from services.llm_client import call_llm_endpoint, call_llm_identity_endpoint
 from services.audio_player import play_audio
 
+person = False
+
 def check_contact():
     """
     Placeholder function simulating a contact check.
