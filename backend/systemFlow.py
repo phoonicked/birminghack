@@ -27,12 +27,14 @@ def main_flow(known_contact, contact_name, stop_event):
             "You are a friendly AI doorbell. Greet known contacts warmly and offer help, "
             "keeping your responses brief and conversational. "
             f"Always respond to {contact_name} with a friendly tone."
+            + extra_info
         )
     else:
         tts_text = "Hi, who am I speaking to?"
         instructions = (
-            "You are an AI doorbell. Greet unknown visitors formally and ask for their identification. "
+            "You are an AI doorbell. Greet unknown visitors formally. "
             "If the visitor says they are a delivery worker, simply reply, 'Could you put your delivery to the porch?' "
+            "State your visit"
             "Keep responses concise and to the point. "
             + extra_info
         )
@@ -45,20 +47,22 @@ def main_flow(known_contact, contact_name, stop_event):
         print("Failed to generate TTS audio.")
         return
     
-    # Step 3: If unknown visitor, ask for their name
-    if not known_contact:
-        name = listen_for_speech("Please state your name.")
-    
     # Step 4: Ask for identity
     identity_input = listen_for_speech("Please state your identity.")
     identity = call_llm_identity_endpoint(identity_input)
-    print(f"Identified as: {identity}")
-    instructions += f" Visitor has identified themselves as {identity}. "
+    if known_contact:
+        print(f"Identified as: {contact_name}")
+        instructions += f" Visitor has identified themselves as {contact_name}. Obtain the purpose of their visit."
+    else:
+        print(f"Identified as: {identity}")
+        instructions += f" Visitor has identified themselves as {identity}. Obtain the purpose of their visit."
     llm_audio = call_llm_endpoint(identity_input, instructions)
     if llm_audio:
         print("Playing LLM-generated audio for identity confirmation...")
     else:
         print("Failed to generate LLM audio for identity confirmation.")
+
+    instructions += "Respond accordingly to the conversation (act like it is a real natural conversation). When a visitor says goodbye, end the conversation. Dont say the visitors name. Dont say hey there."
 
     # Step 5: Conversation loop until the user says exit or the stop_event is set
     while True:
