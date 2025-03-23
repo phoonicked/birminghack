@@ -20,9 +20,20 @@ def fetch_notes():
         notes.append(note)
     return notes
 
-if __name__ == '__main__':
-    # Example usage
-    notes = fetch_notes()
-    print("Fetched notes:")
-    for note in notes:
-        print(note)
+def get_contact_name_from_db(contact_id):
+    """
+    Fetches the contact name from Firestore using the contact ID.
+
+    Args:
+        contact_id (str): The unique ID of the contact.
+
+    Returns:
+        str: The contact's name if found, otherwise None.
+    """
+    db = get_firestore_client()
+    doc_ref = db.collection("contacts").document(contact_id)
+    doc = doc_ref.get()
+    
+    if doc.exists:
+        return doc.to_dict().get("name")
+    return None
