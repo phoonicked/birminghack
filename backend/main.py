@@ -14,7 +14,7 @@ from urllib.parse import urlparse
 try:
     firebase_admin.get_app()
 except ValueError:
-    cred = credentials.Certificate("../brumhack.json")
+    cred = credentials.Certificate("brumhack.json")
     firebase_admin.initialize_app(cred)
 db = firestore.client()
 
