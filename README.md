@@ -52,9 +52,12 @@ When a guest is detected, Ocular automatically initiates a conversation. For tes
 
 4. Review Interaction History:
 Log in to the webapp to view an up-to-date, detailed contact list that includes guest names, images, and conversation records.
+![alt text](./readme_images/Dashboard.jpg)
 
 5. Manage Contacts:
 Use the web interface to search, filter, or remove guest entries as needed.
+![alt text](./readme_images/Contacts.jpg)
+![alt text](./readme_images/contact_edit.jpg)
 
 6. Experience with AI & Guest Engagement
 Building Ocular has been an exhilarating journey at the intersection of computer vision, natural language processing, and real-time data management. By leveraging the Neuphonic API and advanced AI models, we’ve redefined guest interaction from a static log into a dynamic, intelligent experience. Ocular transforms how you connect with those who visit—making every interaction count and paving the way for a smarter, more engaged home environment.
