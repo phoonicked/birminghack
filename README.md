@@ -1,54 +1,73 @@
-# React + TypeScript + Vite
+SecuriBot
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<p align="center">
+<strong>SecuriBot</strong> is an innovative, AI-powered security system designed to monitor your front lawn, detect visitors, and gather essential information about them. Using advanced facial recognition combined with the Neuphonic API, SecuriBot interacts with visitors through voice questions. It then processes their responses with a trained AI bot, responds accordingly, and saves the data to a webapp where the homeowner can view a detailed contact list of visitors.
+</p>
 
-Currently, two official plugins are available:
+## Key Features:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Advanced Face Detection & Tracking** – Utilises state-of-the-art facial recognition to monitor and track people approaching your home.
+- **Voice Interaction** – Engages visitors with voice prompts, asking targeted questions to gather information.
+- **AI-Powered Responses** – Processes visitor responses using a trained AI model that delivers personalized, context-aware feedback.
+- **Data Logging & Web Interface** – Securely saves visitor data (including images and conversation logs) in a cloud database, accessible via a user-friendly webapp.
+- **Real-Time Notifications** – Alerts the homeowner of visitors in real time, providing a comprehensive contact list for later review.
 
-## Expanding the ESLint configuration
+## How Does SecuriBot Work?
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+SecuriBot continuously monitors the front lawn using a dedicated camera system. When a face is detected, the system initiates a conversation using the Neuphonic API to ask key questions about the visitor. Based on the responses, the AI bot generates tailored feedback and interactions. The system then logs all gathered data—images, names, and conversation details—to a web application, where the homeowner can review the contact list and visit history.
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## Workflow:
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Detection:
+The camera detects a face in the front lawn.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Interaction:
+The bot prompts the visitor with voice questions to gather identity and context.
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+Response:
+The AI processes the answers, generates a suitable response, and communicates with the visitor via text-to-speech.
+
+Data Logging:
+All interactions, images, and gathered data are stored in the cloud.
+
+Webapp Access:
+The homeowner navigates the webapp to review the visitor logs and manage the contact list.
+
+Demo Usage
+Follow these steps to see SecuriBot in action:
+
+Start the System:
+Run the backend and webapp components of SecuriBot.
+
+Monitor Your Front Lawn:
+The camera continuously scans for any visitors approaching the property.
+
+Engage with Visitors:
+Once a face is detected, SecuriBot automatically starts a conversation using voice prompts.
+
+If you’re testing, speak clearly to simulate a real visitor interaction.
+
+Review Visitor Data:
+After the interaction, log in to the webapp to see your updated contact list featuring visitor names, images, and conversation details.
+
+Manage Contacts:
+Use the web interface to filter, search, or remove visitor entries as needed.
+
+## Experience with AI & Security
+
+Building SecuriBot has been an exciting challenge that merges computer vision, natural language processing, and real-time data management. Leveraging the Neuphonic API along with advanced AI models, the project not only improves home security but also transforms the way homeowners interact with visitors. Despite the technical challenges—from ensuring reliable face detection to handling voice recognition in various environmental conditions—the experience has been incredibly rewarding and has pushed the boundaries of what modern security systems can achieve.
+
+## Contact
+Kerem Uygun – keremuygun86@gmail.com
+
+Bagus Alwan – bgslwn28@gmail.com
+
+Wilbert Tham – wilbertthxm@gmail.com
+
+Harry Day – hdkeyworth@gmail.com
+
+
+
+
+
+
