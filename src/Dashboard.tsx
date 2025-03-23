@@ -19,6 +19,8 @@ import {
   doc,
   updateDoc,
   deleteDoc,
+  query,
+  where,
 } from "firebase/firestore";
 import { db } from "../src/api/firebase";
 import { FaEdit, FaTrash, FaCheck, FaTimes } from "react-icons/fa";
@@ -57,7 +59,8 @@ const AlertBox: React.FC = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const querySnapshot = await getDocs(collection(db, "temp"));
+        const q = query(collection(db, "Contacts"), where("isContact", "==", false));
+        const querySnapshot = await getDocs(q);
         const newData: TempData[] = [];
 
         querySnapshot.forEach((docSnap) => {
@@ -87,15 +90,13 @@ const AlertBox: React.FC = () => {
 
     try {
       // Add the stranger to the "contacts" collection
-      await addDoc(collection(db, "Contacts"), {
+      await updateDoc(doc(db, "Contacts",item.id), {
         name: item.name,
         image: item.image, 
+        isContact: true,
         description: item.description,
         // Add any additional fields as needed
       });
-
-      // Update the "temp" document to mark as contacted
-      await deleteDoc(doc(db, "temp", item.id));
 
       // Update the local state for just this item
       setTempData((prev) =>
@@ -112,7 +113,7 @@ const AlertBox: React.FC = () => {
   const handleDismissAlert = async (item: TempData) => {
     try {
       // Update the document to mark as contacted without adding to contacts
-      await deleteDoc(doc(db, "temp", item.id));
+      await deleteDoc(doc(db, "Contacts", item.id));
 
       // Update the local state for just this item so its buttons disappear
       setTempData((prev) =>
@@ -140,6 +141,10 @@ const AlertBox: React.FC = () => {
                   <p className="textquestion">
                     Add {item.name || "this stranger"} to your contact list?
                   </p>
+                  <p className="textquestion">
+                    Description: {item.description || "No description available."}
+                  </p>
+
                   <div style={{ display: "flex", gap: "0.5rem" }}>
                     <button onClick={() => handleAddToContacts(item)}>
                       Yes
