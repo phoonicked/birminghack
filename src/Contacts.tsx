@@ -171,7 +171,7 @@ const Contacts: React.FC = () => {
             className="modal-content"
             onClick={(e) => e.stopPropagation()} // Prevent modal from closing when clicking inside content
           >
-            <h2>{editingId ? "Update Contact" : "Add Contact"}</h2>
+            <h2 className="contactupdatetext">{editingId ? "Update Contact" : "Add Contact"}</h2>
             <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <label htmlFor="name">Name:</label>

@@ -17,6 +17,11 @@
     margin-bottom: 1.5rem;
 }
 
+.contactupdatetext{
+    /*color black*/
+    color: black;
+}
+
 .tab-pill {
     padding: 0.5rem 1rem;
     border: none;
